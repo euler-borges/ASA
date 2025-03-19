@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from schemas.alunos import Aluno as AlunoSchema
 from models.alunos    import Aluno
 from sqlalchemy.orm   import Session
@@ -16,8 +16,12 @@ async def saudacao():
 
 @router.post("/alunos")
 def cria_alunos(aluno: AlunoSchema, db: Session = Depends(get_db)):
-    novo_aluno = Aluno(**aluno.model_dump())
-    db.add(novo_aluno)
-    db.commit()
-    db.refresh(novo_aluno)
-    return novo_aluno
+    try:
+        novo_aluno = Aluno(**aluno.model_dump())
+        db.add(novo_aluno)
+        db.commit()
+        db.refresh(novo_aluno)
+        return Response(status_code=status.HTTP_201_CREATED)
+    except Exception as e:
+        print(e)
+        return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail = f"Problemas ao inserir aluno")
