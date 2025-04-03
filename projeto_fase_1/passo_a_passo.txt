@@ -1,0 +1,6 @@
+Criar aplicação pedidos
+    Deve enviar pedidos a uma fila RabbitMQ (pedidos_enviados)
+
+Criar aplicação almoxarifado
+    Deve consumir de pedidos_enviados
+    Deve gerar dados para outra fila (processado_almoxarifado)
