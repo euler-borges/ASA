@@ -3,12 +3,12 @@ from schemas.pedidos import Pedido as PedidoSchema
 from models.pedidos  import Pedido
 from sqlalchemy.orm   import Session
 from models.database  import get_db
-from interacoesMQTT.publisher_pedidos import conectar_e_publicar
+from interacoesMQTT.consumer_pedidos import conectar_e_publicar
 import uuid as uid
 
 router = APIRouter()
 
-OBS: O código abaixo está comentado, pois não é necessário para o funcionamento do sistema, visto que implementa conexão com o banco de dados.
+# OBS: O código abaixo está comentado, pois não é necessário para o funcionamento do sistema, visto que implementa conexão com o banco de dados.
 
 @router.get("/pedidos")
 def pesquisa_pedido_id(db:Session = Depends(get_db)):
@@ -33,20 +33,21 @@ def pesquisa_pedido_id(uuid: str, db:Session = Depends(get_db)):
     else:
         return pedido_retorno_get.first()
 
-@router.post("/pedidos")
-def cria_pedidos(pedido: PedidoSchema, db: Session = Depends(get_db)):
-def cria_pedidos(pedido: PedidoSchema):
-    try:
-        uid_produto = uid.uuid4().hex
-        novo_Pedido = Pedido(uuid = uid_produto, **pedido.model_dump())
-        db.add(novo_Pedido)
-        db.commit()
-        db.refresh(novo_Pedido)
-        conectar_e_publicar(uid_produto, pedido.model_dump())
-        return Response(status_code=status.HTTP_201_CREATED)
-    except Exception as e:
-        print(e)
-        return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content = f"Problemas ao inserir Pedido")
+
+#Sem post no pedidos para o consumidor
+# @router.post("/pedidos")
+# def cria_pedidos(pedido: PedidoSchema, db: Session = Depends(get_db)):
+#     try:
+#         uid_produto = uid.uuid4().hex
+#         novo_Pedido = Pedido(uuid = uid_produto, **pedido.model_dump())
+#         db.add(novo_Pedido)
+#         db.commit()
+#         db.refresh(novo_Pedido)
+#         conectar_e_publicar(uid_produto, pedido.model_dump())
+#         return Response(status_code=status.HTTP_201_CREATED)
+#     except Exception as e:
+#         print(e)
+#         return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content = f"Problemas ao inserir Pedido")
     
 
 @router.put("/pedidos/{uuid}")
