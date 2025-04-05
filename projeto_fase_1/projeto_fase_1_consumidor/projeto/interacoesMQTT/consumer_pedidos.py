@@ -1,6 +1,6 @@
 import pika, sys, os, json
 
-from coneccoes import queue_name, chave
+from coneccoes import queue_pedidos, chave
 
 def callback(ch, method, properties, body):
     data = body.decode("utf-8")
@@ -22,10 +22,10 @@ def conectar_e_consumir():
 
     channel = connection.channel()
 
-    channel.queue_declare(queue=queue_name)
+    channel.queue_declare(queue=queue_pedidos)
 
 
-    channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
+    channel.basic_consume(queue=queue_pedidos, on_message_callback=callback, auto_ack=True)
 
     print(' [*] Aguardando mensagens. CTRL+C para sair')
     channel.start_consuming()

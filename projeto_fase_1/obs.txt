@@ -1,0 +1,3 @@
+Produtor, só vai ter post, sem conexao com banco de dados
+
+Consumidor: absorve da fila e manda pro banco, processa os saslvos no banco e manda pra outra fila
