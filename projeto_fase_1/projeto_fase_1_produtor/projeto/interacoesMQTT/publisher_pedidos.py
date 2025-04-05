@@ -22,7 +22,7 @@ def conectar_e_publicar(uid_produto, model_dump):
 
     i = uid_produto
 
-    dado_pedido = {"id": i, **model_dump} 
+    dado_pedido = {"id": i, **model_dump, "status": "enviado almoxarifado"} 
 
 
     channel.basic_publish(exchange='amq.direct', routing_key=chave, body=json.dumps(dado_pedido).encode("utf-8"))
