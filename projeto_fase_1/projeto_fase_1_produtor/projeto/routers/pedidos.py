@@ -3,6 +3,7 @@ from schemas.pedidos import Pedido as PedidoSchema
 from models.pedidos  import Pedido
 from sqlalchemy.orm   import Session
 from models.database  import get_db
+from interacoesMQTT.publisher_pedidos import conectar_e_publicar
 import uuid as uid
 
 router = APIRouter()
@@ -33,10 +34,12 @@ def pesquisa_pedido_id(uuid: str, db:Session = Depends(get_db)):
 @router.post("/pedidos")
 def cria_pedidos(pedido: PedidoSchema, db: Session = Depends(get_db)):
     try:
-        novo_Pedido = Pedido(uuid = uid.uuid4().hex, **pedido.model_dump())
+        uid_produto = uid.uuid4().hex
+        novo_Pedido = Pedido(uuid = uid_produto, **pedido.model_dump())
         db.add(novo_Pedido)
         db.commit()
         db.refresh(novo_Pedido)
+        conectar_e_publicar(uid_produto, pedido.model_dump())
         return Response(status_code=status.HTTP_201_CREATED)
     except Exception as e:
         print(e)

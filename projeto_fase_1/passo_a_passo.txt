@@ -9,3 +9,7 @@ Criar aplicação almoxarifado
 *Obs: endereço postgresql
     C:\Users\eufil\dados_postgresql
     docker run -d -v C:\Users\eufil\dados_postgresql:/var/lib/postgresql/data -e POSTGRES_PASSWORD=banco123 -p 5433:5432 postgres
+
+
+Rabbit:
+docker run -d --hostname rabbit_server --name rabbit13 -p 15672:15672 -p 5672:5672 -p 25676:25676 rabbitmq:3-management

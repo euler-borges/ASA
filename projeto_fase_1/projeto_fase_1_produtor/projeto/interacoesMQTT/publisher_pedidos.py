@@ -1,8 +1,8 @@
-import pika, uuid, sys, os, json
+import pika, sys, os, json
 
-from coneccoes import queue_name, chave
+from interacoesMQTT.coneccoes import queue_name, chave
 
-def conectar_e_publicar():
+def conectar_e_publicar(uid_produto, model_dump):
     """
     Conecta ao RabbitMQ e publica uma mensagem na fila especificada.
     """
@@ -20,26 +20,12 @@ def conectar_e_publicar():
                     queue=queue_name,
                     routing_key=chave)
 
-    i = uuid.uuid4()
+    i = uid_produto
 
-    dado_pedido = {"id": i.hex, "produto":"batata", "quantidade": 10, "status":"enviado_aloxarifado"} 
+    dado_pedido = {"id": i, **model_dump} 
 
 
     channel.basic_publish(exchange='amq.direct', routing_key=chave, body=json.dumps(dado_pedido).encode("utf-8"))
     print(" [x] Mensagem enviada!")
     connection.close()
 
-
-def main():
-    conectar_e_publicar()
-
-
-if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        print('Interrupted')
-        try:
-            sys.exit(0)
-        except SystemExit:
-            os._exit(0)
