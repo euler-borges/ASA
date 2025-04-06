@@ -3,8 +3,7 @@ from schemas.pedidos import Pedido as PedidoSchema
 from models.pedidos  import Pedido
 from sqlalchemy.orm   import Session
 from models.database  import get_db
-from projeto_fase_1.projeto_fase_1_consumidor.projeto.interacoesMQTT.processamento_paralelo.consumer_pedidos import conectar_e_publicar
-import uuid as uid
+from interacoesMQTT.publisher_pedidos import conectar_e_publicar
 
 router = APIRouter()
 
@@ -33,23 +32,26 @@ def pesquisa_pedido_id(uuid: str, db:Session = Depends(get_db)):
     else:
         return pedido_retorno_get.first()
 
+#primeiro posta o pedido na fila, depois deleta no banco de dados
+@router.post("/pedidos/{uuid}")
+def cria_pedidos(uuid : str, db: Session = Depends(get_db)):
+    try:
+        Pedido_retorno_delete = db.query(Pedido).filter(Pedido.uuid == uuid)
+        #primeiro testa existencia no banco, depois  posta na fila, depois deleta no banco de dados
+        if Pedido_retorno_delete.first() == None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Pedido não existe")
+        else:
+            conectar_e_publicar(Pedido_retorno_delete.first())
 
-#Sem post no pedidos para o consumidor
-# @router.post("/pedidos")
-# def cria_pedidos(pedido: PedidoSchema, db: Session = Depends(get_db)):
-#     try:
-#         uid_produto = uid.uuid4().hex
-#         novo_Pedido = Pedido(uuid = uid_produto, **pedido.model_dump())
-#         db.add(novo_Pedido)
-#         db.commit()
-#         db.refresh(novo_Pedido)
-#         conectar_e_publicar(uid_produto, pedido.model_dump())
-#         return Response(status_code=status.HTTP_201_CREATED)
-#     except Exception as e:
-#         print(e)
-#         return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content = f"Problemas ao inserir Pedido")
+
+            Pedido_retorno_delete.delete(synchronize_session=False)
+            db.commit()
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    except Exception as e:
+        print(e)
+        return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content = f"Problemas ao inserir Pedido")
     
-#mesmo para put e delete
+#Sem put e delete visto que ele envia as mensagenst para a fila
 # @router.put("/pedidos/{uuid}")
 # def update(uuid: str, pedido:PedidoSchema, db:Session = Depends(get_db)):
 #     Pedido_retorno_post = db.query(Pedido).filter(Pedido.uuid == uuid)
@@ -74,16 +76,16 @@ def pesquisa_pedido_id(uuid: str, db:Session = Depends(get_db)):
 #         db.commit()
 #     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-@router.post("/processado")
-def processa_pedido(pedido: PedidoSchema, db: Session = Depends(get_db)):
-    try:
-        uid_produto = uid.uuid4().hex
-        novo_Pedido = Pedido(uuid = uid_produto, **pedido.model_dump())
-        db.add(novo_Pedido)
-        db.commit()
-        db.refresh(novo_Pedido)
-        conectar_e_publicar(uid_produto, pedido.model_dump())
-        return Response(status_code=status.HTTP_201_CREATED)
-    except Exception as e:
-        print(e)
-        return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content = f"Problemas ao inserir Pedido")
+# @router.post("/processado")
+# def processa_pedido(pedido: PedidoSchema, db: Session = Depends(get_db)):
+#     try:
+#         uid_produto = uid.uuid4().hex
+#         novo_Pedido = Pedido(uuid = uid_produto, **pedido.model_dump())
+#         db.add(novo_Pedido)
+#         db.commit()
+#         db.refresh(novo_Pedido)
+#         conectar_e_publicar(uid_produto, pedido.model_dump())
+#         return Response(status_code=status.HTTP_201_CREATED)
+#     except Exception as e:
+#         print(e)
+#         return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content = f"Problemas ao inserir Pedido")

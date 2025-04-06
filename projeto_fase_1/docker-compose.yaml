@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:14
+    ports:
+      - '5433:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: banco123
+      POSTGRES_DB: pedidos
+    volumes:
+      - C:\Users\eufil\dados_postgresql:/var/lib/postgresql/data
+    networks:
+      app-network:
+        ipv4_address: 172.20.0.2
+
+  rabbit:
+    image: rabbitmq:3-management
+    ports:
+      - '15672:15672'
+      - '5672:5672'
+      - '25676:25676'
+    volumes:
+      - C:\Users\eufil\dados_rabbitmq:/var/lib/rabbitmq
+    hostname: rabbit_server
+    networks:
+      app-network:
+        ipv4_address: 172.20.0.3
+
+  web_consumer:
+    build: ./projeto_fase_1_consumidor
+    ports:
+      - '8000:8000'
+    depends_on:
+      - db
+      - rabbit
+    networks:
+      app-network:
+        ipv4_address: 172.20.0.4
+    environment:
+      DATABASE_URL: postgresql://postgres:banco123@localhost:5433/pedidos
+
+  web_producer:
+    build: ./projeto_fase_1_produtor
+    ports:
+      - '8001:8000'
+    depends_on:
+      - rabbit
+    networks:
+      app-network:
+        ipv4_address: 172.20.0.5
+    
+
+networks:
+  app-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
