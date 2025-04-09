@@ -3,17 +3,14 @@ import json
 import json_tricks
 from pedido import Pedido
 
+
 def callback(ch, method, properties, body):
     data = json_tricks.loads(body.decode("utf-8"))
     print(data.pedido)
 
-    # Convertendo os dados em informação
-    #json_data = json.loads(data)
-    #print(json_data)
-
 def main():
-    credentials = pika.PlainCredentials('guest', 'guest')
-    parameters = pika.ConnectionParameters('localhost',
+    credentials = pika.PlainCredentials('admin', 'admin')
+    parameters = pika.ConnectionParameters('172.30.0.10',
                                        5672,
                                        '/',
                                        credentials)
@@ -35,3 +32,10 @@ if __name__ == '__main__':
             sys.exit(0)
         except SystemExit:
             os._exit(0)
+
+
+
+
+
+
+
