@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:14
@@ -10,10 +8,11 @@ services:
       POSTGRES_PASSWORD: banco123
       POSTGRES_DB: pedidos
     volumes:
-      - C:\Users\eufil\dados_postgresql:/var/lib/postgresql/data
+      - /home/euler/dados_postgresql2:/var/lib/postgresql/data # linux
+      # - C:\Users\eufil\dados_postgresql:/var/lib/postgresql/data # windows
     networks:
       app-network:
-        ipv4_address: 172.20.0.2
+        ipv4_address: 172.21.0.2
 
   rabbit:
     image: rabbitmq:3-management
@@ -22,11 +21,12 @@ services:
       - '5672:5672'
       - '25676:25676'
     volumes:
-      - C:\Users\eufil\dados_rabbitmq:/var/lib/rabbitmq
+      - /home/euler/dados_rabbitmq:/var/lib/rabbitmq # linux
+      # - C:\Users\eufil\dados_rabbitmq:/var/lib/rabbitmq #windows
     hostname: rabbit_server
     networks:
       app-network:
-        ipv4_address: 172.20.0.3
+        ipv4_address: 172.21.0.3
 
   web_consumer:
     build: ./projeto_fase_1_consumidor
@@ -37,7 +37,7 @@ services:
       - rabbit
     networks:
       app-network:
-        ipv4_address: 172.20.0.4
+        ipv4_address: 172.21.0.4
     environment:
       DATABASE_URL: postgresql://postgres:banco123@localhost:5433/pedidos
 
@@ -49,7 +49,7 @@ services:
       - rabbit
     networks:
       app-network:
-        ipv4_address: 172.20.0.5
+        ipv4_address: 172.21.0.5
     
 
 networks:
@@ -57,4 +57,4 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.20.0.0/16
+        - subnet: 172.21.0.0/16
