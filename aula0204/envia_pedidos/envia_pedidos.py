@@ -4,13 +4,17 @@ import json
 import json_tricks
 from pedido import Pedido
 import time
+import logging
+logging.basicConfig(level=logging.INFO)
+
 
 def main():
+
     credentials = pika.PlainCredentials('admin', 'admin')
-    parameters = pika.ConnectionParameters('172.30.0.10',
-                                        5672,
-                                        '/',
-                                        credentials)
+    parameters = pika.ConnectionParameters('rabbitmq',
+                                       5672,
+                                       '/',
+                                       credentials)
     connection = pika.BlockingConnection(parameters=parameters)
     channel = connection.channel()
 
@@ -24,14 +28,10 @@ def main():
         pedido = Pedido(str_pedido, i)
         i = i + 1
         channel.basic_publish(exchange='amq.direct', 
-                      routing_key='ufu', 
-                      body=json_tricks.dumps(pedido).encode('utf-8'))
-        print(" [x] Mensagem enviada!")
+                    routing_key='ufu', 
+                    body=json_tricks.dumps(pedido).encode('utf-8'))
+        logging.info(" [x] Mensagem enviada!")
         time.sleep(15)
         
 if __name__ == "__main__":
     main()
-
-
-
-

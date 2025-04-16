@@ -1,4 +1,20 @@
 services:
+  envia_pedidos:
+    build: envia_pedidos/.
+    restart: always
+    depends_on:
+    - rabbitmq
+    container_name: envia_pedidos
+
+
+  consome_pedidos:
+    build: consome_pedidos/.
+    restart: always
+    depends_on:
+    - rabbitmq
+    container_name: consome_pedidos
+
+
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
@@ -9,17 +25,13 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: admin
-    configs:
-      - source: rabbitmq-plugins
-        target: /etc/rabbitmq/enabled_plugins
-    networks:
-      app-network:
-        ipv4_address: 172.30.0.10
+#     configs:
+#       - source: rabbitmq-plugins
+#         target: /etc/rabbitmq/enabled_plugins
 
-
-configs:
-  rabbitmq-plugins:
-    content: "[rabbitmq_management]."  
+# configs:
+#   rabbitmq-plugins:
+#     content: "[rabbitmq_management]."  
 
 networks:
   app-network:
@@ -27,6 +39,42 @@ networks:
     ipam:
       config:
         - subnet: 172.30.0.0/16
+
+
+
+
+
+
+
+# services:
+#   rabbitmq:
+#     image: rabbitmq:3-management
+#     container_name: rabbitmq
+#     restart: always
+#     ports:
+#       - 5672:5672
+#       - 15672:15672
+#     environment:
+#       RABBITMQ_DEFAULT_USER: admin
+#       RABBITMQ_DEFAULT_PASS: admin
+#     # configs:
+#     #   - source: rabbitmq-plugins
+#     #     target: /etc/rabbitmq/enabled_plugins
+#     networks:
+#       app-network:
+#         ipv4_address: 172.30.0.10
+
+
+# configs:
+#   rabbitmq-plugins:
+#     content: "[rabbitmq_management]."  
+
+# networks:
+#   app-network:
+#     driver: bridge
+#     ipam:
+#       config:
+#         - subnet: 172.30.0.0/16
 
 
 
