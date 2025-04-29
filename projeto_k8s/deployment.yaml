@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: projeto-asa
+spec:
+  selector:
+    matchLabels:
+      app: projeto-asa
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: projeto-asa
+    spec:
+      containers:
+      - name: projeto-asa
+        image: projeto_asa:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: projeto-asa-service
+spec:
+  selector:
+    app: projeto-asa
+  ports:
+  - protocol: "TCP"
+    port: 8000
+    targetPort: 8000
+  type: LoadBalancer
+
+
+
+
+
+
+
+
+
+
