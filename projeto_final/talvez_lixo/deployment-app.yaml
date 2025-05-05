@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: projeto-final-asa
+spec:
+  selector:
+    matchLabels:
+      app: projeto-final-asa
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: projeto-final-asa
+    spec:
+      containers:
+      - name: projeto-final-asa
+        image: projeto_final_asa:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: projeto-final-asa-service
+spec:
+  selector:
+    app: projeto-final-asa
+  ports:
+  - protocol: "TCP"
+    port: 8000
+    targetPort: 8000
+  type: LoadBalancer
+
+
+
+
+
+
+
+
+
+

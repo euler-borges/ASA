@@ -6,6 +6,8 @@ class Voo(BaseModel):
     duracao: str  # Assuming duration is a string in the format 'HH:MM:SS'
     horario_saida: str  # Assuming departure time is a string in the format 'HH:MM:SS'
     data: str  # Assuming date is a string in the format 'DD-MM-YYYY'
+    vagas: int
+    preco: int
 
     class Config:
         orm_mode = True
@@ -15,6 +17,7 @@ class Voo(BaseModel):
                 "aeroporto_destino": 2,
                 "duracao": "02:30:00",
                 "horario_saida": "15:00:00",
-                "data": "01-10-2023"
+                "data": "01-10-2023",
+                "vagas": 100
             }
         }

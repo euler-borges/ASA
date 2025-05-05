@@ -1,7 +1,7 @@
 FROM python
-RUN apt-get update && apt-get install python3-pip -y && apt update libxml2
+RUN apt-get update && apt-get install python3-pip -y
 WORKDIR /projeto
-COPY projeto /projeto/
+COPY . /projeto/
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt 
 EXPOSE 8000

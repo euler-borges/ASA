@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    container_name: banco_pf
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: banco123
+      POSTGRES_DB: sg_aeroportos
+    volumes:
+      - C:\Users\eufil\dados_postgresql:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - minha-rede
+
+  app:
+    build: ./app  # caminho onde está seu Dockerfile
+    container_name: minha_aplicacao
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://postgres:banco123@db:5432/sg_aeroportos
+    networks:
+      - minha-rede
+
+networks:
+  minha-rede:
+    driver: bridge

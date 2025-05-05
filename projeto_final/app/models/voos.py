@@ -10,4 +10,6 @@ class Voo(Base):
     duracao = Column(String(50), nullable=False)
     horario_saida = Column(String(50), nullable=False)
     data = Column(String(50), nullable=False)
+    vagas = Column(Integer, nullable=False)
+    preco = Column(Integer, nullable=False)
     added_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('Now()'))

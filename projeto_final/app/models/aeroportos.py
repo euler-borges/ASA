@@ -7,5 +7,5 @@ class Aeroporto(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     nome = Column(String(50), nullable=False)
     cidade = Column(String(50), nullable=False)
-    endereco = Column(Integer, nullable=False)    
+    endereco = Column(String(50), nullable=False)    
     added_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('Now()'))

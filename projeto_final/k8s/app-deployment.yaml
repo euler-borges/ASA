@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: projeto-asa
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: projeto-asa
+  template:
+    metadata:
+      labels:
+        app: projeto-asa
+    spec:
+      containers:
+        - name: projeto-asa
+          image: projeto_final_asa:03
+          env:
+            - name: DATABASE_URL
+              value: postgresql://postgres:banco123@postgres:5432/sg_aeroportos
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "300m"
+            limits:
+              memory: "512Mi"
+              cpu: "1"
